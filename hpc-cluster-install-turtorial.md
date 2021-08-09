@@ -97,7 +97,7 @@ yum几个常用的命令：
 ```shell
 #setsebool -P use_nfs_home_dirs 1
 ```
-管理结点我们在网络设置中已经把网卡分别设置为intrenal和external了。在internal上，我们开启我们需要的服务。在external上只开启sshd等有限的服务。
+管理结点我们在网络设置中已经把网卡分别设置为internal和external了。在internal上，我们开启我们需要的服务。在external上只开启sshd等有限的服务。
 
 ## 安装设置ntp
 计算集群的时间设置要统一。如果服务器时间设置不对，yum install等是很可能会失败的，我曾经踩坑无数。所以我们需要使用ntp。在所有的节点上使用如下命令安装并启用ntp
@@ -750,3 +750,15 @@ echo "source /opt/intel/parallel_studio_xe_2020/psxevars.sh" >> ~/.bashrc
 ```
 ## 安装openmpi
 
+为了链接intel和MLNX，需要使用高性能消息传递库openmpi。我们使用的是openmpi的4.1.1版本，安装包可以从[官网](https://www.open-mpi.org/software/ompi/v4.1/)获取。解压之后进行安装：
+```shell
+tar -zxvf openmpi-4.1.1.tar.gz
+cd openmpi-4.1.1/
+./configure --prefix=(安装目录) --with-knem=/opt/knem-1.1.4.90mlnx1/ --with-mxm=/opt/mellanox/mxm/ --with-verbs --with-slurm CC=icc CXX=icpc FC=ifort
+make install
+```
+通过以下命令将环境变量加入到.bashrc中：
+```shell
+export PATH=/public/clustersoft/openmpi/4.1.1/intel/bin:$PATH
+export LD_LIBRARY_PATH=/public/clustersoft/openmpi/4.1.1/intel/lib:$LD_LIBRARY_PATH
+```
